@@ -43,4 +43,4 @@ def get_alldetails_dict():
 def formatting():
     gsheet.format('A1',{'textFormat': {'bold': True}})
 
-formatting()
+get_alldetails()
