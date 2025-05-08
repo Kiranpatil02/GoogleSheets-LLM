@@ -4,6 +4,7 @@ gc=gspread.service_account('C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+L
 sh=gc.open_by_key("1GOqloR-cN1Jq6NFhEDh84BP8OqAMcNv7LJB8jG0SXtg")
 print(sh.sheet1.get("A1"))
 
+print(sh.worksheets())
 gsheet=sh.sheet1
 
 def getvalues(cellnumber):
@@ -11,7 +12,7 @@ def getvalues(cellnumber):
     print(f"The value of cell ${cellnumber} is :",val)
 
 def updateTitle(titlename):
-    gsheet.update_title("QuizMarks1")
+    sh.update_title(titlename)
     print(f"Title of sheet to updated to :",titlename)
     
 # getvalues("C5")
@@ -43,4 +44,11 @@ def get_alldetails_dict():
 def formatting():
     gsheet.format('A1',{'textFormat': {'bold': True}})
 
-get_alldetails()
+# get_alldetails()
+# updateTitle("Portfolio of levels")
+# get_alldetails()
+
+# cell_list=gsheet.findall("NVDA Nvidia")
+# print(cell_list,cell_list)
+gsheet.update_cell(38,1,"Apple")    
+gsheet.update_cell(38,3,"Stonk")
