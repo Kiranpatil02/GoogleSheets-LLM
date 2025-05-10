@@ -1,7 +1,14 @@
 import gspread
+import os
+from dotenv import load_dotenv 
+
 gc=gspread.service_account('C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json')
 
-sh=gc.open_by_key("1GOqloR-cN1Jq6NFhEDh84BP8OqAMcNv7LJB8jG0SXtg")
+load_dotenv()
+
+Sheet_ID=os.environ["GSHEET_ID"]
+
+sh=gc.open_by_key(Sheet_ID)
 print(sh.sheet1.get("A1"))
 
 print(sh.worksheets())
@@ -50,5 +57,5 @@ def formatting():
 
 # cell_list=gsheet.findall("NVDA Nvidia")
 # print(cell_list,cell_list)
-gsheet.update_cell(38,1,"Apple")    
-gsheet.update_cell(38,3,"Stonk")
+gsheet.update_cell(38,1,"Tesla")    
+# gsheet.update_cell(38,3,"Stonk")
