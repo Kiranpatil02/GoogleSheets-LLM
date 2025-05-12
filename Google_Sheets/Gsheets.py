@@ -9,9 +9,7 @@ load_dotenv()
 Sheet_ID=os.environ["GSHEET_ID"]
 
 sh=gc.open_by_key(Sheet_ID)
-print(sh.sheet1.get("A1"))
 
-print(sh.worksheets())
 gsheet=sh.sheet1
 
 def getvalues(cellnumber):
@@ -51,11 +49,35 @@ def get_alldetails_dict():
 def formatting():
     gsheet.format('A1',{'textFormat': {'bold': True}})
 
-# get_alldetails()
-# updateTitle("Portfolio of levels")
-# get_alldetails()
 
-# cell_list=gsheet.findall("NVDA Nvidia")
-# print(cell_list,cell_list)
-gsheet.update_cell(38,1,"Tesla")    
-# gsheet.update_cell(38,3,"Stonk")
+
+def create_newWorksheet(title):
+    sh=gc.create(title)
+    print(sh)
+    print("New worksheet created with title",title)
+
+def Share_Spreadsheet(email):
+    sh.share(email,perm_type='user',role='writer')
+
+def create_Sheet(title,rows=100,cols=20):
+    worksheet=sh.add_worksheet(title,rows=rows,cols=cols)
+    print("Worksheet",worksheet)
+
+def delete_Sheet(title):
+    worksheet=sh.worksheet(title)
+    sh.del_worksheet(worksheet)
+    print(f'"{title}" successfully delted ')
+
+# create_Sheet("Kira's_Portfolio",200,20)
+
+# delete_Sheet("Kira's1")
+
+def Get_allSheets():
+    list_of_worksheets=sh.worksheets()
+    return list_of_worksheets
+
+def UpdateValue(row,col,newvalue):
+    gsheet.update_cell(row,col,newvalue)
+    print(f'Value updated!!')
+
+UpdateValue(38,2,"0.62%")
