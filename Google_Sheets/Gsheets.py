@@ -1,6 +1,7 @@
 import gspread
 import os
 from dotenv import load_dotenv 
+import asyncio
 
 gc=gspread.service_account('C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json')
 
@@ -34,9 +35,11 @@ def get_entirecol(col):
 
 # get_entirecol(2)
 
-def get_alldetails():
+async def get_alldetails() -> str:
+    """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet"""
     lists=gsheet.get_all_values()
-    print(lists)
+    print("ok ok")
+    return str(lists)
 
 # get_alldetails()
 
@@ -80,4 +83,4 @@ def UpdateValue(row,col,newvalue):
     gsheet.update_cell(row,col,newvalue)
     print(f'Value updated!!')
 
-UpdateValue(38,2,"0.62%")
+# UpdateValue(38,2,"0.62%")
