@@ -62,9 +62,13 @@ def create_newWorksheet(title):
 def Share_Spreadsheet(email):
     sh.share(email,perm_type='user',role='writer')
 
-def create_Sheet(title,rows=100,cols=20):
+async def create_Sheet(title:str,rows:int=100,cols:int=20) -> str:
+    """
+    Adds a new worksheet to a spreadsheet, given a title, rows, and columns.
+    Returns the title of the newly created worksheet.
+    """
     worksheet=sh.add_worksheet(title,rows=rows,cols=cols)
-    print("Worksheet",worksheet)
+    return worksheet
 
 def delete_Sheet(title):
     worksheet=sh.worksheet(title)
