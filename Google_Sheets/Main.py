@@ -16,7 +16,7 @@ llm=GoogleGenAI(
 
 
 agent= FunctionAgent(
-    tools=[get_alldetails,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,UpdateValue,get_entirecol,SelectSheet],
+    tools=[get_alldetails_dict,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,UpdateValue,get_entirecol,SelectSheet,Find_byValue],
     llm=llm,
     system_prompt="Your an expert data analyst, and given with spreadsheet access, carefully select based on the user requrest and answer queries"
 )
@@ -34,6 +34,6 @@ async def main():
 # Call main function in an asynchronous context
 if __name__ == "__main__":
     result = asyncio.run(main())
-    # print(result)   
+
 
 

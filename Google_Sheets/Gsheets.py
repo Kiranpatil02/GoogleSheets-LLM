@@ -51,17 +51,30 @@ async def get_entirecol(col:int)->list:
     
 
 async def get_alldetails() -> str:
-    """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet"""
+    """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet. It contains all the data present in the entire Spreadsheet."""
     lists=gsheet.get_all_values()
     print("ok ok")
     return str(lists)
 
+async def Find_byValue(value:str):
+    """
+    Finds the first cell matching the query, and returns the row and cell value of that value.
+    Example:
+        Find_byValue("Housing price")
+        returns (1,2) -> Explains that Housing price is found on 1st row and 2nd column.
+    """
+    cell=gsheet.find(value)
+    return {
+      "row": cell.row,
+        "column": cell.col
+    }
 
 
-
-def get_alldetails_dict():
+async def get_alldetails_dict()-> dict:
+    """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet. It contains all the data present in the entire Spreadsheet. and returns in dictionary.
+    """
     records=gsheet.get_all_records()
-    print(records)
+    return records
 
 
 def formatting():
