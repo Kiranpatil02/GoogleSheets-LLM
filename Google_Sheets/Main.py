@@ -10,13 +10,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 llm=GoogleGenAI(
-    model="gemini-2.0-flash",
+    model="gemini-2.0-flash-lite",
     api_key=os.environ['GEMINI_API_KEY']
 )
 
 
 agent= FunctionAgent(
-    tools=[get_alldetails,create_Sheet],
+    tools=[get_alldetails,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,UpdateValue,get_entirecol,SelectSheet],
     llm=llm,
     system_prompt="Your an expert data analyst, and given with spreadsheet access, carefully select based on the user requrest and answer queries"
 )
