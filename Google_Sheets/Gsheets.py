@@ -74,16 +74,9 @@ async def get_alldetails_dict()-> dict:
     """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet. It contains all the data present in the entire Spreadsheet. and returns in dictionary.
     """
     records=gsheet.get_all_records()
+    print("DATA:",records)
     return records
 
-
-def formatting():
-    gsheet.format('A1',{'textFormat': {'bold': True}})
-
-def create_newWorksheet(title):
-    sh=gc.create(title)
-    print(sh)
-    print("New worksheet created with title",title)
 
 async def Share_Spreadsheet(email:str,permission:str,role:str):
     """
@@ -127,5 +120,21 @@ async def UpdateValue(row:int,col:int,newvalue:str)-> any:
 
     """
     return gsheet.update_cell(row,col,newvalue)
-    
+
+async def Update_TabColor(color:str):
+    """
+    Changes the color of a spreadsheet tab. Accepts color in hex format. You may convert common color to appropriate HEX codes.
+    """
+    print("Inside udpate_tab_COlor")
+    return gsheet.update_tab_color(color)
+
+
+def formatting():
+    gsheet.format('A1',{'textFormat': {'bold': True}})
+
+def create_newWorksheet(title):
+    sh=gc.create(title)
+    print(sh)
+    print("New worksheet created with title",title)
+
 
