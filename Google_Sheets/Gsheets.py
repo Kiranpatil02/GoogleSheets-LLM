@@ -2,11 +2,17 @@ import gspread
 import os
 from dotenv import load_dotenv 
 import asyncio
+import google.auth
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from google.oauth2 import service_account
+from typing import List
 
 gc=gspread.service_account('C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json')
 
 load_dotenv()
 
+global Sheet_ID
 Sheet_ID=os.environ["GSHEET_ID"]
 
 sh=gc.open_by_key(Sheet_ID)
@@ -136,5 +142,45 @@ def create_newWorksheet(title):
     sh=gc.create(title)
     print(sh)
     print("New worksheet created with title",title)
+
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SERVICE_ACCOUNT_FILE = 'C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json'
+
+
+async def update_values(range_name:str,values:List[List[str]]):
+    """
+    Useful for writing values into the spreadsheet, the range_name should be in A1 notation. and values should in list.
+    Example usecase:
+        update_values("A1:D2",[["A", "B"], ["C", "D"]])
+    """
+    creds=service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE,scopes=SCOPES)
+
+    try:
+        service=build("sheets","v4",credentials=creds)
+
+        body = {"values": values}
+        print("INisde..",values)
+        result=(
+            service.spreadsheets()
+            .values()
+            .update(
+                spreadsheetId=Sheet_ID,
+                range=range_name,
+                valueInputOption="USER_ENTERED",
+                body=body,
+            )
+            .execute()
+        )
+        print(f"{result.get('updatedCells')} cells updated.")
+        print("OOO",result)
+        return result
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return error
+
+
+
+
 
 
