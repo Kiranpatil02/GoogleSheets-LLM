@@ -16,7 +16,7 @@ llm=GoogleGenAI(
 
 
 agent= FunctionAgent(
-    tools=[get_alldetails_dict,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,get_entirecol,SelectSheet,Find_byValue,Update_TabColor,update_values],
+    tools=[get_alldetails_dict,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,get_entirecol,SelectSheet,Find_byValue,Update_TabColor,update_values,Set_Background],
     llm=llm,
     system_prompt="""Your an expert data analyst,and provided with various various spreadsheet tools, carefully analyse and provide results.
     Do's:

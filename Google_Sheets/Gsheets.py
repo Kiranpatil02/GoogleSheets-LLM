@@ -1,5 +1,6 @@
 import gspread
 import os
+import re
 from dotenv import load_dotenv 
 import asyncio
 import google.auth
@@ -7,6 +8,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
 from typing import List
+
 
 gc=gspread.service_account('C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json')
 
@@ -147,7 +149,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SERVICE_ACCOUNT_FILE = 'C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json'
 
 
-async def update_values(range_name:str,values:List[List[str]]):
+async def update_values(range_name:str,values:List[List[str]],value_input_option:str="USER_ENTERED"):
     """
     Useful for writing values into the spreadsheet, the range_name should be in A1 notation. and values should in list.
     Example usecase:
@@ -165,8 +167,8 @@ async def update_values(range_name:str,values:List[List[str]]):
             .values()
             .update(
                 spreadsheetId=Sheet_ID,
-                range=range_name,
-                valueInputOption="USER_ENTERED",
+                range=f"{gsheet.title}!{range_name}",
+                valueInputOption=value_input_option,
                 body=body,
             )
             .execute()
@@ -179,6 +181,101 @@ async def update_values(range_name:str,values:List[List[str]]):
         print(f"An error occurred: {error}")
         return error
 
+
+COLUMN_LETTERS = {chr(ord('A') + i): i for i in range(26)}
+
+async def a1_to_index(cell:str):
+    match = re.match(r"^([A-Z]+)(\d+)$", cell.upper())
+    if not match:
+        raise ValueError(f"Invalid A1 cell reference: {cell}")
+    col_letters, row_str = match.groups()
+    # compute zero-based column index
+    col = sum((COLUMN_LETTERS[ch] + 1) * (26 ** i) for i, ch in enumerate(reversed(col_letters))) - 1
+    row = int(row_str) - 1
+    return row, col
+
+async def parse_a1_range(a1_range:str):
+    """
+    Accepts a string like "A1" or "B2:D4" and returns dict with startRowIndex, endRowIndex,
+    startColumnIndex, endColumnIndex (exclusive).
+    """
+    parts = a1_range.split(':')
+    if len(parts) == 1:
+        start = end = parts[0]
+        sr, sc =await a1_to_index(start)
+        return {
+            'startRowIndex': sr,
+            'endRowIndex': sr + 1,
+            'startColumnIndex': sc,
+            'endColumnIndex': sc + 1
+        }
+    elif len(parts) == 2:
+        sr, sc =await a1_to_index(parts[0])
+        er, ec =await a1_to_index(parts[1])
+        # ensure start <= end
+        return {
+            'startRowIndex': min(sr, er),
+            'endRowIndex': max(sr, er) + 1,
+            'startColumnIndex': min(sc, ec),
+            'endColumnIndex': max(sc, ec) + 1
+        }
+    else:
+        raise ValueError(f"Invalid A1 range: {a1_range}")
+
+
+async def Set_Background(a1_range:str,rgb:list):
+    """
+    Useful to change background color of cells either a single block of cell or range of cells.
+    Args:
+        a1_range (str): single cell like "C3" or range like "A1:D4" (All in caps).
+        rgb (tuple): three floats in [0,1] for (red, green, blue).
+    Example:
+        >>> # change color from cell A1:C3 with color Red
+        >>> # result=Set_Background("A1:C3",[1.0,0,0])
+    """
+    if not isinstance(rgb, list) or len(rgb) != 3 or not all(isinstance(x, (int, float)) and 0 <= x <= 1 for x in rgb):
+        raise ValueError("rgb must be a list of 3 floats in the range [0, 1]")
+    creds=service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE,scopes=SCOPES)
+    service=build("sheets","v4",credentials=creds)
+    grid_range=await parse_a1_range(a1_range)
+    grid_range['sheetId']=gsheet.id
+    try:
+        body={
+            "requests": [
+            {
+                "repeatCell": {
+                    "range":grid_range,
+                    "cell": {
+                        "userEnteredFormat": {
+                            "backgroundColor":  {
+                                "red": 1,
+                                "green":0,
+                                "blue": 0
+                            }
+                        }
+                    },
+                    "fields": "userEnteredFormat.backgroundColor"
+                }
+            }
+        ]
+        }
+
+        response=service.spreadsheets().batchUpdate(
+            spreadsheetId=Sheet_ID,
+            body=body,
+        ).execute()
+    except HttpError as error:
+        print("ERROR",error)
+    
+
+
+# def Metadata():
+#     creds=service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE,scopes=SCOPES)
+#     service=build("sheets","v4",credentials=creds)
+#     sheets_metadata = service.spreadsheets().get(spreadsheetId=Sheet_ID).execute()
+#     print("MEthods->",service.spreadsheets())
+#     # sheet_names = [sheet["properties"]["title"] for sheet in sheets_metadata["sheets"]]
+#     print(sheets_metadata)
 
 
 
