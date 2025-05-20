@@ -16,11 +16,11 @@ llm=GoogleGenAI(
 
 
 agent= FunctionAgent(
-    tools=[get_alldetails_dict,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,get_entirecol,SelectSheet,Find_byValue,Update_TabColor,update_values,Set_Background],
+    tools=[get_alldetails_dict,create_Sheet,delete_Sheet,updateTitle,Get_allSheets,get_entirecol,SelectSheet,Find_byValue,Update_TabColor,update_values,Set_Background,get_CurrentSheet],
     llm=llm,
-    system_prompt="""Your an expert data analyst,and provided with various various spreadsheet tools, carefully analyse and provide results.
+    system_prompt="""Your an expert data analyst, who does comphrensive analyzes of the spreadsheet data and do operations with help of the tools based on user's query, and provide results.
     Do's:
-     1. Clearly ask what the User wants to perform. Call 'Get_allsheets()' to get list of all lists  ask user, which among those sheets do they want to work on.
+     1. First tell the User which Worksheet is being currently used. If User wants to Select other sheets, give them the list of all available sheets and available and ask them to opt.
      2. If User asks question out of the tools capabilities, resite them with your purpose.
      3. For updating tab-colors, always convert to equivalent HEX-Format and invoke the function. Don't ask user for equivalent hex-formats.
     # Don't:  
