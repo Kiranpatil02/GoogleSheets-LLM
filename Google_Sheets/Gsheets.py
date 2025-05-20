@@ -40,6 +40,12 @@ def getcolumn_value(row,col):
     print("The values are:",val)
 
 
+async def get_CurrentSheet()-> str:
+    """
+    Tells the current Worksheet chosen. 
+    """
+    return gsheet.title
+
 async def SelectSheet(sheetname:str):
     """
     Selects a worksheet by taking name of the sheet and updates to the global variable.
@@ -242,8 +248,6 @@ async def Set_Background(args:SetBackgroundArgs):
       
     a1_range=args.a1_range
     rgb=args.rgb
-    print("DEBUG: a1_range =", a1_range)  # ADD THIS
-    print("DEBUG: rgb =", rgb)
     creds=service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE,scopes=SCOPES)
     service=build("sheets","v4",credentials=creds)
     grid_range=await parse_a1_range(a1_range)
@@ -273,9 +277,7 @@ async def Set_Background(args:SetBackgroundArgs):
             spreadsheetId=Sheet_ID,
             body=body,
         ).execute()
-        print("FINISH")
     except HttpError as error:
-        print(error)
         print("ERROR",error)
     
 
