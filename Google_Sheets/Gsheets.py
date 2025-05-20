@@ -7,7 +7,8 @@ import google.auth
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
-from typing import List
+from typing import List,Tuple,Union
+from pydantic import BaseModel,Field
 
 
 gc=gspread.service_account('C:/Users/Kiran Patil/Desktop/For fun/Google_sheets+LLM/Google_Sheets/credintials.json')
@@ -173,8 +174,6 @@ async def update_values(range_name:str,values:List[List[str]],value_input_option
             )
             .execute()
         )
-        print(f"{result.get('updatedCells')} cells updated.")
-        print("OOO",result)
         return result
 
     except HttpError as error:
@@ -223,18 +222,28 @@ async def parse_a1_range(a1_range:str):
         raise ValueError(f"Invalid A1 range: {a1_range}")
 
 
-async def Set_Background(a1_range:str,rgb:list):
+class SetBackgroundArgs(BaseModel):
+    """
+    Arguments for setting background color of cells.
+    """        
+    a1_range:str=Field(description="Single cell like 'C3' or range like 'A1:D4' (All in caps)")
+    rgb:List[float]=Field(description="Three floats in [0,1] for (red, green, blue)")
+
+
+async def Set_Background(args:SetBackgroundArgs):
     """
     Useful to change background color of cells either a single block of cell or range of cells.
-    Args:
-        a1_range (str): single cell like "C3" or range like "A1:D4" (All in caps).
-        rgb (tuple): three floats in [0,1] for (red, green, blue).
     Example:
-        >>> # change color from cell A1:C3 with color Red
-        >>> # result=Set_Background("A1:C3",[1.0,0,0])
+        >>> # change color from cell A1 to C3 with color Red
+        >>> # Example: Set_Background(SetBackgroundArgs(a1_range="A1:C3",rgb=[1.0,0.0,0.0]))
     """
-    if not isinstance(rgb, list) or len(rgb) != 3 or not all(isinstance(x, (int, float)) and 0 <= x <= 1 for x in rgb):
-        raise ValueError("rgb must be a list of 3 floats in the range [0, 1]")
+    if isinstance(args, dict):
+        args = SetBackgroundArgs(**args)
+      
+    a1_range=args.a1_range
+    rgb=args.rgb
+    print("DEBUG: a1_range =", a1_range)  # ADD THIS
+    print("DEBUG: rgb =", rgb)
     creds=service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE,scopes=SCOPES)
     service=build("sheets","v4",credentials=creds)
     grid_range=await parse_a1_range(a1_range)
@@ -248,9 +257,9 @@ async def Set_Background(a1_range:str,rgb:list):
                     "cell": {
                         "userEnteredFormat": {
                             "backgroundColor":  {
-                                "red": 1,
-                                "green":0,
-                                "blue": 0
+                                "red": rgb[0],
+                                "green":rgb[1],
+                                "blue": rgb[2]
                             }
                         }
                     },
@@ -264,7 +273,9 @@ async def Set_Background(a1_range:str,rgb:list):
             spreadsheetId=Sheet_ID,
             body=body,
         ).execute()
+        print("FINISH")
     except HttpError as error:
+        print(error)
         print("ERROR",error)
     
 
