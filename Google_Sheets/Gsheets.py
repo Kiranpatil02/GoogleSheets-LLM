@@ -68,7 +68,6 @@ async def get_entirecol(col:int)->list:
 async def get_alldetails() -> str:
     """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet. It contains all the data present in the entire Spreadsheet."""
     lists=gsheet.get_all_values()
-    print("ok ok")
     return str(lists)
 
 async def Find_byValue(value:str):
@@ -86,7 +85,7 @@ async def Find_byValue(value:str):
 
 
 async def get_alldetails_dict()-> dict:
-    """Logs all the details in the Spreadsheet in details as lists, it helps to give all the information related to the spreadsheet. It contains all the data present in the entire Spreadsheet. and returns in dictionary.
+    """Logs all the data present in the Sheet, it helps to give all the information related to the spreadsheet. This can be used for further queries. 
     """
     records=gsheet.get_all_records()
     print("DATA:",records)
@@ -217,7 +216,6 @@ async def parse_a1_range(a1_range:str):
     elif len(parts) == 2:
         sr, sc =await a1_to_index(parts[0])
         er, ec =await a1_to_index(parts[1])
-        # ensure start <= end
         return {
             'startRowIndex': min(sr, er),
             'endRowIndex': max(sr, er) + 1,
@@ -280,15 +278,6 @@ async def Set_Background(args:SetBackgroundArgs):
     except HttpError as error:
         print("ERROR",error)
     
-
-
-# def Metadata():
-#     creds=service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE,scopes=SCOPES)
-#     service=build("sheets","v4",credentials=creds)
-#     sheets_metadata = service.spreadsheets().get(spreadsheetId=Sheet_ID).execute()
-#     print("MEthods->",service.spreadsheets())
-#     # sheet_names = [sheet["properties"]["title"] for sheet in sheets_metadata["sheets"]]
-#     print(sheets_metadata)
 
 
 
